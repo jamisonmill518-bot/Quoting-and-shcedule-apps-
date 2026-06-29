@@ -1,9 +1,10 @@
-import { calcQuote, formatCurrency, totalCubicYards, orderYards, formatDate } from '../utils/calculations.js'
+import { calcQuote, formatCurrency, totalCubicYards, orderYards, formatDate, calcAddonLineTotal } from '../utils/calculations.js'
 
 export default function SummarySection({ quote, onShare }) {
-  const r = calcQuote(quote.sections, quote.pricing, quote.labor, quote.markup)
+  const r = calcQuote(quote.sections, quote.pricing, quote.labor, quote.markup, quote.addons)
   const cy = totalCubicYards(quote.sections)
   const ordered = orderYards(cy)
+  const addons = quote.addons || []
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -54,6 +55,17 @@ export default function SummarySection({ quote, onShare }) {
         </SummaryCard>
       )}
 
+      {/* Add-ons */}
+      {addons.some(a => calcAddonLineTotal(a) > 0) && (
+        <SummaryCard title="Decorative Add-ons">
+          {addons.map(a => {
+            const amt = calcAddonLineTotal(a)
+            return amt > 0 ? <Row key={a.id} label={a.description} value={formatCurrency(amt)} /> : null
+          })}
+          <Row label="Add-ons total" value={formatCurrency(r.addonsTotal)} highlight />
+        </SummaryCard>
+      )}
+
       {/* Labor */}
       <SummaryCard title="Labor">
         {quote.labor.map(l => {
@@ -68,6 +80,7 @@ export default function SummarySection({ quote, onShare }) {
       {/* Totals */}
       <SummaryCard title="Totals">
         <Row label="Materials" value={formatCurrency(r.materials.total)} />
+        <Row label="Add-ons" value={formatCurrency(r.addonsTotal)} />
         <Row label="Labor" value={formatCurrency(r.laborTotal)} />
         <Row label={`Subtotal`} value={formatCurrency(r.subtotal)} />
         <Row label={`Markup / Overhead (${quote.markup}%)`} value={formatCurrency(r.markupAmount)} />

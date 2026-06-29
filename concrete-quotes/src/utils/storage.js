@@ -48,6 +48,7 @@ export function newQuote() {
       pumpFlatFee: ''
     },
     labor: [{ id: '1', description: 'Labor', hours: '', rate: '75' }],
+    addons: [],
     markup: '20',
     notes: ''
   }

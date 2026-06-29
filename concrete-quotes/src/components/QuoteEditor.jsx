@@ -1,12 +1,13 @@
 import { useState } from 'react'
-import { calcQuote, formatCurrency, totalCubicYards, orderYards } from '../utils/calculations.js'
+import { calcQuote, formatCurrency, totalCubicYards, orderYards, calcAddonLineTotal } from '../utils/calculations.js'
 import CustomerSection from './CustomerSection.jsx'
 import AreasSection from './AreasSection.jsx'
 import PricingSection from './PricingSection.jsx'
+import AddonsSection from './AddonsSection.jsx'
 import LaborSection from './LaborSection.jsx'
 import SummarySection from './SummarySection.jsx'
 
-const TABS = ['Customer', 'Areas', 'Pricing', 'Labor', 'Summary']
+const TABS = ['Customer', 'Areas', 'Pricing', 'Add-ons', 'Labor', 'Summary']
 
 export default function QuoteEditor({ quote, onSave, onBack }) {
   const [q, setQ] = useState(quote)
@@ -71,8 +72,9 @@ export default function QuoteEditor({ quote, onSave, onBack }) {
         {tab === 0 && <CustomerSection quote={q} onChange={update} />}
         {tab === 1 && <AreasSection quote={q} onChange={update} />}
         {tab === 2 && <PricingSection quote={q} onChange={update} />}
-        {tab === 3 && <LaborSection quote={q} onChange={update} />}
-        {tab === 4 && <SummarySection quote={q} onShare={() => shareSummary(q)} />}
+        {tab === 3 && <AddonsSection quote={q} onChange={update} />}
+        {tab === 4 && <LaborSection quote={q} onChange={update} />}
+        {tab === 5 && <SummarySection quote={q} onShare={() => shareSummary(q)} />}
       </div>
 
       {/* Nav arrows */}
@@ -135,8 +137,14 @@ function StatusBadge({ status, onChange }) {
 }
 
 function shareSummary(q) {
-  const r = calcQuote(q.sections, q.pricing, q.labor, q.markup)
+  const r = calcQuote(q.sections, q.pricing, q.labor, q.markup, q.addons)
   const cy = totalCubicYards(q.sections)
+  const addonLines = (q.addons || [])
+    .map(a => {
+      const total = calcAddonLineTotal(a)
+      return total > 0 ? `${a.description}: ${formatCurrency(total)}` : undefined
+    })
+    .filter(Boolean)
   const text = [
     `CONCRETE QUOTE`,
     `Date: ${new Date(q.createdAt).toLocaleDateString()}`,
@@ -154,6 +162,8 @@ function shareSummary(q) {
     r.materials.colorCost > 0 ? `Colored Concrete: ${formatCurrency(r.materials.colorCost)}` : undefined,
     r.materials.pumpCost > 0 ? `Concrete Pump: ${formatCurrency(r.materials.pumpCost)}` : undefined,
     `Materials: ${formatCurrency(r.materials.total)}`,
+    ...addonLines,
+    r.addonsTotal > 0 ? `Add-ons Total: ${formatCurrency(r.addonsTotal)}` : undefined,
     `Labor: ${formatCurrency(r.laborTotal)}`,
     `Markup (${q.markup}%): ${formatCurrency(r.markupAmount)}`,
     `─────────────────────`,

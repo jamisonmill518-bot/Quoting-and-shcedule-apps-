@@ -32,7 +32,7 @@ export default function QuoteList({ quotes, onNew, onEdit, onDelete }) {
           </div>
         ) : (
           quotes.map(q => {
-            const result = calcQuote(q.sections, q.pricing, q.labor, q.markup)
+            const result = calcQuote(q.sections, q.pricing, q.labor, q.markup, q.addons)
             const sc = STATUS_COLORS[q.status] || STATUS_COLORS.Draft
             return (
               <div

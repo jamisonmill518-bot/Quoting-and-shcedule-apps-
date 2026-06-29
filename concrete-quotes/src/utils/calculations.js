@@ -93,13 +93,33 @@ export function calcLaborCost(labor) {
   }, 0)
 }
 
-export function calcQuote(sections, pricing, labor, markup) {
+// Reference price ranges for decorative add-ons — confirm with local contractors/suppliers.
+export const ADDON_TYPES = [
+  { id: 'border', label: 'Textured / Stamped Border', unit: 'ft', unitLabel: 'Linear Feet', rateLabel: '$ per Linear Ft', low: 15, high: 18 },
+  { id: 'stairFace', label: 'Custom Stair Face / Riser', unit: 'step', unitLabel: 'Number of Steps', rateLabel: '$ per Step', low: 280, high: 420 },
+  { id: 'exposedAggregate', label: 'Exposed Aggregate Finish', unit: 'sqft', unitLabel: 'Square Feet', rateLabel: '$ per Sq Ft', low: 7, high: 18 },
+  { id: 'sawCut', label: 'Saw Cut Control Joints', unit: 'ft', unitLabel: 'Linear Feet', rateLabel: '$ per Linear Ft', low: 1, high: 2 },
+  { id: 'sealer', label: 'Concrete Sealer', unit: 'sqft', unitLabel: 'Square Feet', rateLabel: '$ per Sq Ft', low: 1.35, high: 2.5 },
+  { id: 'custom', label: 'Custom Add-on', unit: 'flat', unitLabel: null, rateLabel: 'Flat Cost ($)', low: 0, high: 0 }
+]
+
+export function calcAddonLineTotal(addon) {
+  if (addon.type === 'custom') return parseFloat(addon.rate || 0)
+  return parseFloat(addon.qty || 0) * parseFloat(addon.rate || 0)
+}
+
+export function calcAddonsCost(addons) {
+  return (addons || []).reduce((sum, a) => sum + calcAddonLineTotal(a), 0)
+}
+
+export function calcQuote(sections, pricing, labor, markup, addons = []) {
   const materials = calcMaterialCost(sections, pricing)
   const laborTotal = calcLaborCost(labor)
-  const subtotal = materials.total + laborTotal
+  const addonsTotal = calcAddonsCost(addons)
+  const subtotal = materials.total + laborTotal + addonsTotal
   const markupAmount = subtotal * (parseFloat(markup || 0) / 100)
   const total = subtotal + markupAmount
-  return { materials, laborTotal, subtotal, markupAmount, total }
+  return { materials, laborTotal, addonsTotal, subtotal, markupAmount, total }
 }
 
 export function formatCurrency(amount) {
