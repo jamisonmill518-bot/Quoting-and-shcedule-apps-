@@ -34,10 +34,18 @@ export function newQuote() {
     sections: [{ id: '1', label: 'Section 1', length: '', width: '', thickness: '4' }],
     pricing: {
       concretePerYard: '175',
+      psi: '3000',
       rebarCost: '',
       formsCost: '',
       fiberCost: '',
-      otherMaterials: ''
+      otherMaterials: '',
+      coloredConcrete: false,
+      colorMethod: 'integral',
+      colorCostPerYard: '',
+      pumpType: 'none',
+      pumpHourlyRate: '',
+      pumpHours: '',
+      pumpFlatFee: ''
     },
     labor: [{ id: '1', description: 'Labor', hours: '', rate: '75' }],
     markup: '20',

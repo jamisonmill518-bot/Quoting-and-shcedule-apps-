@@ -26,6 +26,43 @@ export function bagsNeeded(cy) {
   return Math.ceil(cy / 0.022)
 }
 
+// Typical U.S. ready-mix price adders by PSI strength, relative to 3,000 PSI base.
+// Reference only — actual pricing varies by region and producer; confirm with your local plant.
+export const PSI_OPTIONS = [
+  { psi: '2500', label: '2,500 PSI', use: 'Walkways, light patios', adder: -10 },
+  { psi: '3000', label: '3,000 PSI', use: 'Standard residential slabs', adder: 0 },
+  { psi: '3500', label: '3,500 PSI', use: 'Driveways, exterior flatwork', adder: 10 },
+  { psi: '4000', label: '4,000 PSI', use: 'Garage floors, footings, freeze-thaw areas', adder: 18 },
+  { psi: '4500', label: '4,500 PSI', use: 'Heavy-duty / structural', adder: 25 },
+  { psi: '5000', label: '5,000 PSI', use: 'High-strength industrial floors', adder: 30 }
+]
+
+// Reference cost ranges for color methods — actual pricing varies by supplier/region.
+export const COLOR_METHODS = [
+  { id: 'integral', label: 'Integral Color (powder/liquid)', rangeLow: 50, rangeHigh: 100, unit: 'yd³' },
+  { id: 'hardener', label: 'Color Hardener (broadcast)', rangeLow: 75, rangeHigh: 150, unit: 'yd³' },
+  { id: 'stamped', label: 'Stamped / Decorative', rangeLow: 150, rangeHigh: 300, unit: 'yd³' }
+]
+
+// Reference pump rates — actual pricing varies by region, reach, and minimum hours.
+export const PUMP_TYPES = [
+  { id: 'none', label: 'None' },
+  { id: 'line', label: 'Line Pump (trailer)', hourlyLow: 200, hourlyHigh: 320, minHours: 3 },
+  { id: 'boom', label: 'Boom Pump', hourlyLow: 225, hourlyHigh: 300, minHours: 4 }
+]
+
+export function calcColorCost(ordered, pricing) {
+  if (!pricing.coloredConcrete) return 0
+  return ordered * parseFloat(pricing.colorCostPerYard || 0)
+}
+
+export function calcPumpCost(pricing) {
+  if (!pricing.pumpType || pricing.pumpType === 'none') return 0
+  const hourly = parseFloat(pricing.pumpHourlyRate || 0) * parseFloat(pricing.pumpHours || 0)
+  const flat = parseFloat(pricing.pumpFlatFee || 0)
+  return hourly + flat
+}
+
 export function calcMaterialCost(sections, pricing) {
   const cy = totalCubicYards(sections)
   const ordered = orderYards(cy)
@@ -34,6 +71,8 @@ export function calcMaterialCost(sections, pricing) {
   const formsCost = parseFloat(pricing.formsCost || 0)
   const fiberCost = parseFloat(pricing.fiberCost || 0)
   const otherMaterials = parseFloat(pricing.otherMaterials || 0)
+  const colorCost = calcColorCost(ordered, pricing)
+  const pumpCost = calcPumpCost(pricing)
   return {
     cy,
     ordered,
@@ -42,7 +81,9 @@ export function calcMaterialCost(sections, pricing) {
     formsCost,
     fiberCost,
     otherMaterials,
-    total: concreteCost + rebarCost + formsCost + fiberCost + otherMaterials
+    colorCost,
+    pumpCost,
+    total: concreteCost + rebarCost + formsCost + fiberCost + otherMaterials + colorCost + pumpCost
   }
 }
 

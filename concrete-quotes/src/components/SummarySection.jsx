@@ -31,9 +31,18 @@ export default function SummarySection({ quote, onShare }) {
       <SummaryCard title="Concrete">
         <Row label="Calculated volume" value={`${cy.toFixed(2)} yd³`} />
         <Row label="Order amount" value={`${ordered.toFixed(1)} yd³`} highlight />
+        <Row label={`PSI grade`} value={`${quote.pricing.psi} PSI`} />
         <Row label="Price per yard" value={formatCurrency(quote.pricing.concretePerYard)} />
         <Row label="Concrete cost" value={formatCurrency(r.materials.concreteCost)} />
       </SummaryCard>
+
+      {/* Color & Pump */}
+      {(r.materials.colorCost > 0 || r.materials.pumpCost > 0) && (
+        <SummaryCard title="Color & Pump">
+          {r.materials.colorCost > 0 && <Row label="Colored concrete" value={formatCurrency(r.materials.colorCost)} />}
+          {r.materials.pumpCost > 0 && <Row label="Concrete pump" value={formatCurrency(r.materials.pumpCost)} />}
+        </SummaryCard>
+      )}
 
       {/* Materials */}
       {(r.materials.rebarCost > 0 || r.materials.formsCost > 0 || r.materials.fiberCost > 0 || r.materials.otherMaterials > 0) && (
