@@ -3,6 +3,7 @@ name: Deploy Concrete Quote Pro to GitHub Pages
 on:
   push:
     branches: [main, claude/iphone-concrete-quotes-fvr6xz]
+  workflow_dispatch:
 
 permissions:
   contents: read
