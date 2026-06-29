@@ -1,0 +1,168 @@
+import { useState } from 'react'
+import { calcQuote, formatCurrency, totalCubicYards, orderYards } from '../utils/calculations.js'
+import CustomerSection from './CustomerSection.jsx'
+import AreasSection from './AreasSection.jsx'
+import PricingSection from './PricingSection.jsx'
+import LaborSection from './LaborSection.jsx'
+import SummarySection from './SummarySection.jsx'
+
+const TABS = ['Customer', 'Areas', 'Pricing', 'Labor', 'Summary']
+
+export default function QuoteEditor({ quote, onSave, onBack }) {
+  const [q, setQ] = useState(quote)
+  const [tab, setTab] = useState(0)
+
+  function update(patch) {
+    const updated = { ...q, ...patch }
+    setQ(updated)
+    onSave(updated)
+  }
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh', background: '#f1f5f9' }}>
+      {/* Header */}
+      <div style={{
+        background: '#1e40af',
+        color: 'white',
+        paddingTop: 'max(16px, env(safe-area-inset-top))',
+        paddingBottom: 0
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', padding: '0 16px 12px' }}>
+          <button
+            onClick={onBack}
+            style={{ background: 'none', color: 'white', fontSize: 24, marginRight: 12, lineHeight: 1, padding: 0 }}
+          >
+            ‹
+          </button>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontWeight: 700, fontSize: 17 }}>
+              {q.customer.name || 'New Quote'}
+            </div>
+            <div style={{ fontSize: 12, opacity: .75 }}>{q.jobType}</div>
+          </div>
+          <StatusBadge status={q.status} onChange={s => update({ status: s })} />
+        </div>
+
+        {/* Tabs */}
+        <div style={{ display: 'flex', overflowX: 'auto', borderTop: '1px solid rgba(255,255,255,.15)' }}>
+          {TABS.map((t, i) => (
+            <button
+              key={t}
+              onClick={() => setTab(i)}
+              style={{
+                flex: '0 0 auto',
+                padding: '10px 16px',
+                fontSize: 13,
+                fontWeight: 600,
+                color: tab === i ? 'white' : 'rgba(255,255,255,.6)',
+                background: 'none',
+                borderBottom: tab === i ? '2px solid white' : '2px solid transparent',
+                whiteSpace: 'nowrap'
+              }}
+            >
+              {t}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Content */}
+      <div style={{ flex: 1, overflowY: 'auto', padding: '16px 16px', paddingBottom: 'max(24px, env(safe-area-inset-bottom))' }}>
+        {tab === 0 && <CustomerSection quote={q} onChange={update} />}
+        {tab === 1 && <AreasSection quote={q} onChange={update} />}
+        {tab === 2 && <PricingSection quote={q} onChange={update} />}
+        {tab === 3 && <LaborSection quote={q} onChange={update} />}
+        {tab === 4 && <SummarySection quote={q} onShare={() => shareSummary(q)} />}
+      </div>
+
+      {/* Nav arrows */}
+      <div style={{
+        background: 'white',
+        borderTop: '1px solid #e2e8f0',
+        padding: '10px 16px',
+        paddingBottom: 'max(10px, env(safe-area-inset-bottom))',
+        display: 'flex',
+        gap: 10
+      }}>
+        <button
+          disabled={tab === 0}
+          onClick={() => setTab(t => t - 1)}
+          style={{ flex: 1, padding: '12px', borderRadius: 10, background: tab === 0 ? '#f1f5f9' : '#1e40af', color: tab === 0 ? '#94a3b8' : 'white', fontWeight: 600, fontSize: 15 }}
+        >
+          ← Back
+        </button>
+        {tab < TABS.length - 1 ? (
+          <button
+            onClick={() => setTab(t => t + 1)}
+            style={{ flex: 1, padding: '12px', borderRadius: 10, background: '#1e40af', color: 'white', fontWeight: 600, fontSize: 15 }}
+          >
+            Next →
+          </button>
+        ) : (
+          <button
+            onClick={() => shareSummary(q)}
+            style={{ flex: 1, padding: '12px', borderRadius: 10, background: '#16a34a', color: 'white', fontWeight: 600, fontSize: 15 }}
+          >
+            Share Quote
+          </button>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function StatusBadge({ status, onChange }) {
+  const options = ['Draft', 'Sent', 'Accepted', 'Declined']
+  const colors = { Draft: '#854d0e', Sent: '#1e40af', Accepted: '#166534', Declined: '#991b1b' }
+  return (
+    <select
+      value={status}
+      onChange={e => onChange(e.target.value)}
+      style={{
+        background: 'rgba(255,255,255,.15)',
+        border: '1px solid rgba(255,255,255,.3)',
+        color: 'white',
+        borderRadius: 8,
+        padding: '4px 8px',
+        fontSize: 12,
+        fontWeight: 600,
+        width: 'auto'
+      }}
+    >
+      {options.map(o => <option key={o} value={o} style={{ color: colors[o], background: 'white' }}>{o}</option>)}
+    </select>
+  )
+}
+
+function shareSummary(q) {
+  const r = calcQuote(q.sections, q.pricing, q.labor, q.markup)
+  const cy = totalCubicYards(q.sections)
+  const text = [
+    `CONCRETE QUOTE`,
+    `Date: ${new Date(q.createdAt).toLocaleDateString()}`,
+    `Status: ${q.status}`,
+    ``,
+    `CUSTOMER`,
+    `Name: ${q.customer.name}`,
+    `Phone: ${q.customer.phone}`,
+    `Address: ${q.customer.address}`,
+    ``,
+    `JOB: ${q.jobType}`,
+    `Concrete: ${cy.toFixed(2)} yd³ (order ${orderYards(cy)} yd³)`,
+    ``,
+    `COST BREAKDOWN`,
+    `Materials: ${formatCurrency(r.materials.total)}`,
+    `Labor: ${formatCurrency(r.laborTotal)}`,
+    `Markup (${q.markup}%): ${formatCurrency(r.markupAmount)}`,
+    `─────────────────────`,
+    `TOTAL: ${formatCurrency(r.total)}`,
+    ``,
+    q.notes ? `Notes: ${q.notes}` : ''
+  ].filter(l => l !== undefined).join('\n')
+
+  if (navigator.share) {
+    navigator.share({ title: `Concrete Quote - ${q.customer.name}`, text })
+  } else {
+    navigator.clipboard?.writeText(text).then(() => alert('Quote copied to clipboard!'))
+  }
+}
