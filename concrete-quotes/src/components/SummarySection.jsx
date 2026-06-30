@@ -1,7 +1,8 @@
-import { calcQuote, formatCurrency, totalCubicYards, orderYards, formatDate, calcAddonLineTotal } from '../utils/calculations.js'
+import { calcQuote, formatCurrency, totalCubicYards, orderYards, formatDate, calcAddonLineTotal, calcAggregateLineTotal } from '../utils/calculations.js'
 
 export default function SummarySection({ quote, onShare }) {
-  const r = calcQuote(quote.sections, quote.pricing, quote.labor, quote.markup, quote.addons)
+  const aggregates = quote.aggregates || []
+  const r = calcQuote(quote.sections, quote.pricing, quote.labor, quote.markup, quote.addons, aggregates)
   const cy = totalCubicYards(quote.sections)
   const ordered = orderYards(cy)
   const addons = quote.addons || []
@@ -10,17 +11,18 @@ export default function SummarySection({ quote, onShare }) {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       {/* Total hero */}
       <div style={{
-        background: 'linear-gradient(135deg, #1e40af, #3b82f6)',
+        background: 'linear-gradient(135deg, #1c1917, #292524)',
         borderRadius: 18,
         padding: '24px 20px',
         color: 'white',
         textAlign: 'center',
-        boxShadow: '0 8px 24px rgba(30,64,175,.3)'
+        boxShadow: '0 8px 24px rgba(0,0,0,.3)',
+        borderTop: '4px solid #f59e0b'
       }}>
         <div style={{ fontSize: 13, opacity: .8, fontWeight: 600, letterSpacing: '.08em', textTransform: 'uppercase', marginBottom: 6 }}>
           Total Quote
         </div>
-        <div style={{ fontSize: 48, fontWeight: 800, lineHeight: 1 }}>
+        <div style={{ fontSize: 48, fontWeight: 800, lineHeight: 1, color: '#f59e0b' }}>
           {formatCurrency(r.total)}
         </div>
         <div style={{ fontSize: 13, opacity: .75, marginTop: 8 }}>
@@ -36,6 +38,17 @@ export default function SummarySection({ quote, onShare }) {
         <Row label="Price per yard" value={formatCurrency(quote.pricing.concretePerYard)} />
         <Row label="Concrete cost" value={formatCurrency(r.materials.concreteCost)} />
       </SummaryCard>
+
+      {/* Aggregate */}
+      {aggregates.some(a => calcAggregateLineTotal(a) > 0) && (
+        <SummaryCard title="Base & Aggregate">
+          {aggregates.map(a => {
+            const amt = calcAggregateLineTotal(a)
+            return amt > 0 ? <Row key={a.id} label={a.description} value={formatCurrency(amt)} /> : null
+          })}
+          <Row label="Aggregate total" value={formatCurrency(r.materials.aggregateCost)} highlight />
+        </SummaryCard>
+      )}
 
       {/* Color & Pump */}
       {(r.materials.colorCost > 0 || r.materials.pumpCost > 0) && (
@@ -98,13 +111,13 @@ export default function SummarySection({ quote, onShare }) {
       <button
         onClick={onShare}
         style={{
-          background: '#16a34a',
-          color: 'white',
+          background: '#f59e0b',
+          color: '#1c1917',
           padding: '16px',
           borderRadius: 14,
-          fontWeight: 700,
+          fontWeight: 800,
           fontSize: 16,
-          boxShadow: '0 4px 12px rgba(22,163,74,.3)'
+          boxShadow: '0 4px 12px rgba(245,158,11,.4)'
         }}
       >
         Share / Send Quote
@@ -115,8 +128,8 @@ export default function SummarySection({ quote, onShare }) {
 
 function SummaryCard({ title, children }) {
   return (
-    <div style={{ background: 'white', borderRadius: 14, padding: 16, boxShadow: '0 1px 3px rgba(0,0,0,.07)' }}>
-      <div style={{ fontWeight: 700, fontSize: 14, color: '#64748b', textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: 10 }}>{title}</div>
+    <div style={{ background: 'white', borderRadius: 14, padding: 16, boxShadow: '0 2px 6px rgba(0,0,0,.1)' }}>
+      <div style={{ fontWeight: 800, fontSize: 12, color: '#1c1917', textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 10, borderLeft: '3px solid #f59e0b', paddingLeft: 8 }}>{title}</div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>{children}</div>
     </div>
   )
@@ -125,8 +138,8 @@ function SummaryCard({ title, children }) {
 function Row({ label, value, highlight, total }) {
   return (
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-      <span style={{ fontSize: total ? 15 : 14, fontWeight: total ? 700 : 400, color: total ? '#0f172a' : '#475569' }}>{label}</span>
-      <span style={{ fontSize: total ? 18 : 14, fontWeight: total || highlight ? 700 : 500, color: total ? '#1e40af' : highlight ? '#0f172a' : '#334155' }}>
+      <span style={{ fontSize: total ? 15 : 14, fontWeight: total ? 700 : 400, color: total ? '#1c1917' : '#57534e' }}>{label}</span>
+      <span style={{ fontSize: total ? 18 : 14, fontWeight: total || highlight ? 700 : 500, color: total ? '#d97706' : highlight ? '#1c1917' : '#44403c' }}>
         {value}
       </span>
     </div>

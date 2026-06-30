@@ -63,7 +63,7 @@ export function calcPumpCost(pricing) {
   return hourly + flat
 }
 
-export function calcMaterialCost(sections, pricing) {
+export function calcMaterialCost(sections, pricing, aggregates = []) {
   const cy = totalCubicYards(sections)
   const ordered = orderYards(cy)
   const concreteCost = ordered * parseFloat(pricing.concretePerYard || 0)
@@ -73,6 +73,7 @@ export function calcMaterialCost(sections, pricing) {
   const otherMaterials = parseFloat(pricing.otherMaterials || 0)
   const colorCost = calcColorCost(ordered, pricing)
   const pumpCost = calcPumpCost(pricing)
+  const aggregateCost = calcAggregatesCost(aggregates)
   return {
     cy,
     ordered,
@@ -83,7 +84,8 @@ export function calcMaterialCost(sections, pricing) {
     otherMaterials,
     colorCost,
     pumpCost,
-    total: concreteCost + rebarCost + formsCost + fiberCost + otherMaterials + colorCost + pumpCost
+    aggregateCost,
+    total: concreteCost + rebarCost + formsCost + fiberCost + otherMaterials + colorCost + pumpCost + aggregateCost
   }
 }
 
@@ -112,8 +114,30 @@ export function calcAddonsCost(addons) {
   return (addons || []).reduce((sum, a) => sum + calcAddonLineTotal(a), 0)
 }
 
-export function calcQuote(sections, pricing, labor, markup, addons = []) {
-  const materials = calcMaterialCost(sections, pricing)
+// Reference prices per ton for base/aggregate materials — 2026 national averages.
+// Confirm with local quarry/supplier; pricing varies significantly by region.
+export const AGGREGATE_TYPES = [
+  { id: 'crushedStone', label: '#57 Crushed Stone / Gravel', use: 'Base, drainage, backfill', low: 35, high: 65 },
+  { id: 'crusherRun', label: 'Crusher Run / Compacted Base', use: 'Driveway & slab sub-base', low: 20, high: 40 },
+  { id: 'peaGravel', label: 'Pea Gravel', use: 'Drainage, decorative, pathways', low: 45, high: 75 },
+  { id: 'concreteSand', label: 'Washed Concrete / Bedding Sand', use: 'Bedding layer, mix fill', low: 30, high: 55 },
+  { id: 'fillSand', label: 'Fill / Mason Sand', use: 'General fill, leveling', low: 25, high: 50 },
+  { id: 'roadBase', label: '#4 Road Base', use: 'Driveway & parking sub-base', low: 18, high: 35 },
+  { id: 'ripRap', label: 'Rip Rap / Large Stone', use: 'Erosion control, drainage', low: 40, high: 80 },
+  { id: 'decomposedGranite', label: 'Decomposed Granite (DG)', use: 'Pathways, landscaping', low: 55, high: 85 },
+  { id: 'custom', label: 'Custom Material', use: '', low: 0, high: 0 }
+]
+
+export function calcAggregateLineTotal(agg) {
+  return parseFloat(agg.tons || 0) * parseFloat(agg.rate || 0) + parseFloat(agg.delivery || 0)
+}
+
+export function calcAggregatesCost(aggregates) {
+  return (aggregates || []).reduce((sum, a) => sum + calcAggregateLineTotal(a), 0)
+}
+
+export function calcQuote(sections, pricing, labor, markup, addons = [], aggregates = []) {
+  const materials = calcMaterialCost(sections, pricing, aggregates)
   const laborTotal = calcLaborCost(labor)
   const addonsTotal = calcAddonsCost(addons)
   const subtotal = materials.total + laborTotal + addonsTotal

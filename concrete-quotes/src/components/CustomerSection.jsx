@@ -64,8 +64,8 @@ export default function CustomerSection({ quote, onChange }) {
 
 export function Card({ title, children }) {
   return (
-    <div style={{ background: 'white', borderRadius: 14, padding: 16, boxShadow: '0 1px 3px rgba(0,0,0,.07)' }}>
-      {title && <div style={{ fontWeight: 700, fontSize: 15, marginBottom: 14, color: '#0f172a' }}>{title}</div>}
+    <div style={{ background: 'white', borderRadius: 14, padding: 16, boxShadow: '0 2px 6px rgba(0,0,0,.1)' }}>
+      {title && <div style={{ fontWeight: 800, fontSize: 13, marginBottom: 14, color: '#1c1917', textTransform: 'uppercase', letterSpacing: '.06em', borderLeft: '3px solid #f59e0b', paddingLeft: 8 }}>{title}</div>}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>{children}</div>
     </div>
   )

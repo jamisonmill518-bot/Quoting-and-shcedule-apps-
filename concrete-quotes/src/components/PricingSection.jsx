@@ -33,13 +33,13 @@ export default function PricingSection({ quote, onChange }) {
             {PSI_OPTIONS.map(o => <option key={o.psi} value={o.psi}>{o.label}</option>)}
           </select>
         </Field>
-        <div style={{ background: '#f8fafc', borderRadius: 8, padding: '10px 12px', fontSize: 13, color: '#475569' }}>
+        <div style={{ background: '#faf7f4', borderRadius: 8, padding: '10px 12px', fontSize: 13, color: '#57534e' }}>
           {psiOption.use}. Typical adder vs. 3,000 PSI base: <strong>{psiOption.adder >= 0 ? '+' : ''}${psiOption.adder}/yd³</strong>
           {' '}(2026 national reference — confirm with your local producer).
         </div>
         <button
           onClick={() => set('concretePerYard', String((175 + psiOption.adder).toFixed(0)))}
-          style={{ background: '#eff6ff', color: '#1e40af', borderRadius: 8, padding: '8px 0', fontWeight: 600, fontSize: 13 }}
+          style={{ background: '#fef3c7', color: '#d97706', borderRadius: 8, padding: '8px 0', fontWeight: 700, fontSize: 13 }}
         >
           Apply suggested price (${(175 + psiOption.adder).toFixed(0)}/yd³)
         </button>
@@ -57,8 +57,8 @@ export default function PricingSection({ quote, onChange }) {
           />
         </Field>
         {ordered > 0 && parseFloat(p.concretePerYard) > 0 && (
-          <div style={{ background: '#eff6ff', borderRadius: 8, padding: '10px 14px', fontSize: 14 }}>
-            <div style={{ color: '#1e40af', fontWeight: 600 }}>
+          <div style={{ background: '#fef9e7', borderRadius: 8, padding: '10px 14px', fontSize: 14 }}>
+            <div style={{ color: '#d97706', fontWeight: 700 }}>
               {ordered} yd³ × ${parseFloat(p.concretePerYard).toFixed(0)}/yd³ = {formatCurrency(concreteCost)}
             </div>
           </div>
@@ -83,7 +83,7 @@ export default function PricingSection({ quote, onChange }) {
                 {COLOR_METHODS.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
               </select>
             </Field>
-            <div style={{ background: '#f8fafc', borderRadius: 8, padding: '10px 12px', fontSize: 13, color: '#475569' }}>
+            <div style={{ background: '#faf7f4', borderRadius: 8, padding: '10px 12px', fontSize: 13, color: '#57534e' }}>
               Typical range: <strong>${colorMethod.rangeLow}–${colorMethod.rangeHigh}/{colorMethod.unit}</strong> (2026 reference, varies by intensity/supplier)
             </div>
             <Field label="Color Cost per Cubic Yard ($)">
@@ -97,7 +97,7 @@ export default function PricingSection({ quote, onChange }) {
               />
             </Field>
             {colorCost > 0 && (
-              <div style={{ background: '#eff6ff', borderRadius: 8, padding: '10px 14px', fontSize: 14, color: '#1e40af', fontWeight: 600 }}>
+              <div style={{ background: '#fef9e7', borderRadius: 8, padding: '10px 14px', fontSize: 14, color: '#d97706', fontWeight: 700 }}>
                 {ordered} yd³ × ${parseFloat(p.colorCostPerYard).toFixed(0)}/yd³ = {formatCurrency(colorCost)}
               </div>
             )}
@@ -114,7 +114,7 @@ export default function PricingSection({ quote, onChange }) {
 
         {p.pumpType !== 'none' && (
           <>
-            <div style={{ background: '#f8fafc', borderRadius: 8, padding: '10px 12px', fontSize: 13, color: '#475569' }}>
+            <div style={{ background: '#faf7f4', borderRadius: 8, padding: '10px 12px', fontSize: 13, color: '#57534e' }}>
               Typical rate: <strong>${pumpOption.hourlyLow}–${pumpOption.hourlyHigh}/hr</strong>, {pumpOption.minHours}-hour minimum (2026 reference, plus possible trip/standby fees)
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
@@ -150,7 +150,7 @@ export default function PricingSection({ quote, onChange }) {
               />
             </Field>
             {pumpCost > 0 && (
-              <div style={{ background: '#eff6ff', borderRadius: 8, padding: '10px 14px', fontSize: 14, color: '#1e40af', fontWeight: 600 }}>
+              <div style={{ background: '#fef9e7', borderRadius: 8, padding: '10px 14px', fontSize: 14, color: '#d97706', fontWeight: 700 }}>
                 Pump total: {formatCurrency(pumpCost)}
               </div>
             )}
@@ -224,8 +224,8 @@ export default function PricingSection({ quote, onChange }) {
                 borderRadius: 8,
                 fontSize: 13,
                 fontWeight: 600,
-                background: quote.markup == pct ? '#1e40af' : '#f1f5f9',
-                color: quote.markup == pct ? 'white' : '#475569',
+                background: quote.markup == pct ? '#1c1917' : '#f5f0eb',
+                color: quote.markup == pct ? '#f59e0b' : '#57534e',
                 border: 'none'
               }}
             >

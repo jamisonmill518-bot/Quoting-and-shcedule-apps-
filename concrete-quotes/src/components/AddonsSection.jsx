@@ -30,12 +30,12 @@ export default function AddonsSection({ quote, onChange }) {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-      <div style={{ background: '#fdf4ff', borderRadius: 14, padding: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div style={{ background: '#1c1917', borderRadius: 14, padding: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <div style={{ fontSize: 12, color: '#a21caf', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.05em' }}>Add-ons Total</div>
-          <div style={{ fontSize: 28, fontWeight: 700, color: '#86198f' }}>{formatCurrency(total)}</div>
+          <div style={{ fontSize: 11, color: '#a8a29e', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.08em' }}>Add-ons Total</div>
+          <div style={{ fontSize: 28, fontWeight: 800, color: '#f59e0b' }}>{formatCurrency(total)}</div>
         </div>
-        <div style={{ fontSize: 36 }}>✨</div>
+        <div style={{ fontSize: 30 }}>🪨</div>
       </div>
 
       {addons.length === 0 && (
@@ -70,7 +70,7 @@ export default function AddonsSection({ quote, onChange }) {
             </Field>
 
             {typeDef.id !== 'custom' && typeDef.high > 0 && (
-              <div style={{ background: '#f8fafc', borderRadius: 8, padding: '10px 12px', fontSize: 13, color: '#475569' }}>
+              <div style={{ background: '#faf7f4', borderRadius: 8, padding: '10px 12px', fontSize: 13, color: '#57534e' }}>
                 Typical range: <strong>${typeDef.low}–${typeDef.high} {typeDef.rateLabel.replace('$ per ', '/ ')}</strong> (2026 reference, varies by region/contractor)
               </div>
             )}
@@ -101,7 +101,7 @@ export default function AddonsSection({ quote, onChange }) {
             </div>
 
             {lineTotal > 0 && (
-              <div style={{ background: '#fdf4ff', borderRadius: 8, padding: '8px 12px', fontSize: 13, color: '#86198f', fontWeight: 600 }}>
+              <div style={{ background: '#fef9e7', borderRadius: 8, padding: '8px 12px', fontSize: 13, color: '#d97706', fontWeight: 700 }}>
                 {typeDef.unit === 'flat'
                   ? `Flat cost: ${formatCurrency(lineTotal)}`
                   : `${a.qty || 0} × ${formatCurrency(a.rate)} = ${formatCurrency(lineTotal)}`}
@@ -115,11 +115,11 @@ export default function AddonsSection({ quote, onChange }) {
         onClick={add}
         style={{
           background: 'white',
-          border: '2px dashed #cbd5e1',
+          border: '2px dashed #d97706',
           borderRadius: 14,
           padding: '14px',
-          color: '#1e40af',
-          fontWeight: 600,
+          color: '#d97706',
+          fontWeight: 700,
           fontSize: 15,
           width: '100%'
         }}

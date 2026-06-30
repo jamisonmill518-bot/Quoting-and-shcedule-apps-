@@ -1,13 +1,14 @@
 import { useState } from 'react'
-import { calcQuote, formatCurrency, totalCubicYards, orderYards, calcAddonLineTotal } from '../utils/calculations.js'
+import { calcQuote, formatCurrency, totalCubicYards, orderYards, calcAddonLineTotal, calcAggregateLineTotal } from '../utils/calculations.js'
 import CustomerSection from './CustomerSection.jsx'
 import AreasSection from './AreasSection.jsx'
+import AggregateSection from './AggregateSection.jsx'
 import PricingSection from './PricingSection.jsx'
 import AddonsSection from './AddonsSection.jsx'
 import LaborSection from './LaborSection.jsx'
 import SummarySection from './SummarySection.jsx'
 
-const TABS = ['Customer', 'Areas', 'Pricing', 'Add-ons', 'Labor', 'Summary']
+const TABS = ['Customer', 'Areas', 'Aggregate', 'Pricing', 'Add-ons', 'Labor', 'Summary']
 
 export default function QuoteEditor({ quote, onSave, onBack }) {
   const [q, setQ] = useState(quote)
@@ -23,10 +24,11 @@ export default function QuoteEditor({ quote, onSave, onBack }) {
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100dvh', background: '#f1f5f9' }}>
       {/* Header */}
       <div style={{
-        background: '#1e40af',
+        background: '#1c1917',
         color: 'white',
         paddingTop: 'max(16px, env(safe-area-inset-top))',
-        paddingBottom: 0
+        paddingBottom: 0,
+        borderBottom: '3px solid #f59e0b'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', padding: '0 16px 12px' }}>
           <button
@@ -55,9 +57,9 @@ export default function QuoteEditor({ quote, onSave, onBack }) {
                 padding: '10px 16px',
                 fontSize: 13,
                 fontWeight: 600,
-                color: tab === i ? 'white' : 'rgba(255,255,255,.6)',
+                color: tab === i ? '#f59e0b' : 'rgba(255,255,255,.5)',
                 background: 'none',
-                borderBottom: tab === i ? '2px solid white' : '2px solid transparent',
+                borderBottom: tab === i ? '2px solid #f59e0b' : '2px solid transparent',
                 whiteSpace: 'nowrap'
               }}
             >
@@ -71,10 +73,11 @@ export default function QuoteEditor({ quote, onSave, onBack }) {
       <div style={{ flex: 1, overflowY: 'auto', padding: '16px 16px', paddingBottom: 'max(24px, env(safe-area-inset-bottom))' }}>
         {tab === 0 && <CustomerSection quote={q} onChange={update} />}
         {tab === 1 && <AreasSection quote={q} onChange={update} />}
-        {tab === 2 && <PricingSection quote={q} onChange={update} />}
-        {tab === 3 && <AddonsSection quote={q} onChange={update} />}
-        {tab === 4 && <LaborSection quote={q} onChange={update} />}
-        {tab === 5 && <SummarySection quote={q} onShare={() => shareSummary(q)} />}
+        {tab === 2 && <AggregateSection quote={q} onChange={update} />}
+        {tab === 3 && <PricingSection quote={q} onChange={update} />}
+        {tab === 4 && <AddonsSection quote={q} onChange={update} />}
+        {tab === 5 && <LaborSection quote={q} onChange={update} />}
+        {tab === 6 && <SummarySection quote={q} onShare={() => shareSummary(q)} />}
       </div>
 
       {/* Nav arrows */}
@@ -89,21 +92,21 @@ export default function QuoteEditor({ quote, onSave, onBack }) {
         <button
           disabled={tab === 0}
           onClick={() => setTab(t => t - 1)}
-          style={{ flex: 1, padding: '12px', borderRadius: 10, background: tab === 0 ? '#f1f5f9' : '#1e40af', color: tab === 0 ? '#94a3b8' : 'white', fontWeight: 600, fontSize: 15 }}
+          style={{ flex: 1, padding: '12px', borderRadius: 10, background: tab === 0 ? '#e7e0d8' : '#1c1917', color: tab === 0 ? '#a8a29e' : 'white', fontWeight: 700, fontSize: 15 }}
         >
           ← Back
         </button>
         {tab < TABS.length - 1 ? (
           <button
             onClick={() => setTab(t => t + 1)}
-            style={{ flex: 1, padding: '12px', borderRadius: 10, background: '#1e40af', color: 'white', fontWeight: 600, fontSize: 15 }}
+            style={{ flex: 1, padding: '12px', borderRadius: 10, background: '#f59e0b', color: '#1c1917', fontWeight: 700, fontSize: 15 }}
           >
             Next →
           </button>
         ) : (
           <button
             onClick={() => shareSummary(q)}
-            style={{ flex: 1, padding: '12px', borderRadius: 10, background: '#16a34a', color: 'white', fontWeight: 600, fontSize: 15 }}
+            style={{ flex: 1, padding: '12px', borderRadius: 10, background: '#16a34a', color: 'white', fontWeight: 700, fontSize: 15 }}
           >
             Share Quote
           </button>
@@ -115,19 +118,19 @@ export default function QuoteEditor({ quote, onSave, onBack }) {
 
 function StatusBadge({ status, onChange }) {
   const options = ['Draft', 'Sent', 'Accepted', 'Declined']
-  const colors = { Draft: '#854d0e', Sent: '#1e40af', Accepted: '#166534', Declined: '#991b1b' }
+  const colors = { Draft: '#92400e', Sent: '#b45309', Accepted: '#166534', Declined: '#991b1b' }
   return (
     <select
       value={status}
       onChange={e => onChange(e.target.value)}
       style={{
-        background: 'rgba(255,255,255,.15)',
-        border: '1px solid rgba(255,255,255,.3)',
-        color: 'white',
+        background: 'rgba(245,158,11,.15)',
+        border: '1px solid rgba(245,158,11,.4)',
+        color: '#f59e0b',
         borderRadius: 8,
         padding: '4px 8px',
         fontSize: 12,
-        fontWeight: 600,
+        fontWeight: 700,
         width: 'auto'
       }}
     >
@@ -137,11 +140,18 @@ function StatusBadge({ status, onChange }) {
 }
 
 function shareSummary(q) {
-  const r = calcQuote(q.sections, q.pricing, q.labor, q.markup, q.addons)
+  const aggregates = q.aggregates || []
+  const r = calcQuote(q.sections, q.pricing, q.labor, q.markup, q.addons, aggregates)
   const cy = totalCubicYards(q.sections)
   const addonLines = (q.addons || [])
     .map(a => {
       const total = calcAddonLineTotal(a)
+      return total > 0 ? `${a.description}: ${formatCurrency(total)}` : undefined
+    })
+    .filter(Boolean)
+  const aggLines = aggregates
+    .map(a => {
+      const total = calcAggregateLineTotal(a)
       return total > 0 ? `${a.description}: ${formatCurrency(total)}` : undefined
     })
     .filter(Boolean)
@@ -161,6 +171,8 @@ function shareSummary(q) {
     `COST BREAKDOWN`,
     r.materials.colorCost > 0 ? `Colored Concrete: ${formatCurrency(r.materials.colorCost)}` : undefined,
     r.materials.pumpCost > 0 ? `Concrete Pump: ${formatCurrency(r.materials.pumpCost)}` : undefined,
+    aggLines.length > 0 ? `Base/Aggregate:` : undefined,
+    ...aggLines,
     `Materials: ${formatCurrency(r.materials.total)}`,
     ...addonLines,
     r.addonsTotal > 0 ? `Add-ons Total: ${formatCurrency(r.addonsTotal)}` : undefined,

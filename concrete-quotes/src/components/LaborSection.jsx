@@ -23,12 +23,12 @@ export default function LaborSection({ quote, onChange }) {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-      <div style={{ background: '#f0fdf4', borderRadius: 14, padding: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div style={{ background: '#1c1917', borderRadius: 14, padding: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <div style={{ fontSize: 12, color: '#16a34a', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.05em' }}>Total Labor</div>
-          <div style={{ fontSize: 28, fontWeight: 700, color: '#15803d' }}>{formatCurrency(total)}</div>
+          <div style={{ fontSize: 11, color: '#a8a29e', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.08em' }}>Total Labor</div>
+          <div style={{ fontSize: 28, fontWeight: 800, color: '#f59e0b' }}>{formatCurrency(total)}</div>
         </div>
-        <div style={{ fontSize: 36 }}>👷</div>
+        <div style={{ fontSize: 30 }}>👷</div>
       </div>
 
       {labor.map(l => {
@@ -73,7 +73,7 @@ export default function LaborSection({ quote, onChange }) {
               </Field>
             </div>
             {lineTotal > 0 && (
-              <div style={{ background: '#f0fdf4', borderRadius: 8, padding: '8px 12px', fontSize: 13, color: '#15803d', fontWeight: 600 }}>
+              <div style={{ background: '#fef9e7', borderRadius: 8, padding: '8px 12px', fontSize: 13, color: '#d97706', fontWeight: 700 }}>
                 {l.hours}h × ${parseFloat(l.rate).toFixed(0)}/hr = {formatCurrency(lineTotal)}
               </div>
             )}
@@ -85,11 +85,11 @@ export default function LaborSection({ quote, onChange }) {
         onClick={add}
         style={{
           background: 'white',
-          border: '2px dashed #cbd5e1',
+          border: '2px dashed #d97706',
           borderRadius: 14,
           padding: '14px',
-          color: '#1e40af',
-          fontWeight: 600,
+          color: '#d97706',
+          fontWeight: 700,
           fontSize: 15,
           width: '100%'
         }}

@@ -31,14 +31,14 @@ export default function AreasSection({ quote, onChange }) {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-      <div style={{ background: '#eff6ff', borderRadius: 14, padding: 16, display: 'flex', justifyContent: 'space-between' }}>
+      <div style={{ background: '#1c1917', borderRadius: 14, padding: 16, display: 'flex', justifyContent: 'space-between' }}>
         <div>
-          <div style={{ fontSize: 12, color: '#3b82f6', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.05em' }}>Total Concrete</div>
-          <div style={{ fontSize: 28, fontWeight: 700, color: '#1e40af' }}>{totalCY.toFixed(2)} <span style={{ fontSize: 14 }}>yd³</span></div>
+          <div style={{ fontSize: 11, color: '#a8a29e', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.08em' }}>Total Concrete</div>
+          <div style={{ fontSize: 28, fontWeight: 800, color: '#f59e0b' }}>{totalCY.toFixed(2)} <span style={{ fontSize: 14, fontWeight: 600 }}>yd³</span></div>
         </div>
         <div style={{ textAlign: 'right' }}>
-          <div style={{ fontSize: 12, color: '#3b82f6', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.05em' }}>Order Amount</div>
-          <div style={{ fontSize: 28, fontWeight: 700, color: '#1e40af' }}>{orderedCY.toFixed(1)} <span style={{ fontSize: 14 }}>yd³</span></div>
+          <div style={{ fontSize: 11, color: '#a8a29e', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.08em' }}>Order Amount</div>
+          <div style={{ fontSize: 28, fontWeight: 800, color: '#f59e0b' }}>{orderedCY.toFixed(1)} <span style={{ fontSize: 14, fontWeight: 600 }}>yd³</span></div>
         </div>
       </div>
 
@@ -94,7 +94,7 @@ export default function AreasSection({ quote, onChange }) {
             </Field>
 
             {cy > 0 && (
-              <div style={{ background: '#f8fafc', borderRadius: 8, padding: '8px 12px', fontSize: 13, color: '#475569' }}>
+              <div style={{ background: '#fef9e7', borderRadius: 8, padding: '8px 12px', fontSize: 13, color: '#92400e' }}>
                 {s.length}ft × {s.width}ft × {s.thickness}" = <strong>{cy.toFixed(2)} yd³</strong>
                 {' '}({(cy * 27).toFixed(1)} ft³)
               </div>
@@ -107,11 +107,11 @@ export default function AreasSection({ quote, onChange }) {
         onClick={addSection}
         style={{
           background: 'white',
-          border: '2px dashed #cbd5e1',
+          border: '2px dashed #d97706',
           borderRadius: 14,
           padding: '14px',
-          color: '#1e40af',
-          fontWeight: 600,
+          color: '#d97706',
+          fontWeight: 700,
           fontSize: 15,
           width: '100%'
         }}

@@ -49,6 +49,7 @@ export function newQuote() {
     },
     labor: [{ id: '1', description: 'Labor', hours: '', rate: '75' }],
     addons: [],
+    aggregates: [],
     markup: '20',
     notes: ''
   }
